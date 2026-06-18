@@ -1,0 +1,193 @@
+/* ==========================================================================
+   PlatoYa - Estilos Premium de la página de Registro
+   ========================================================================== */
+
+.page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  position: relative;
+  background-image: url('/login_bg.png');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+
+.page::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0, 0, 0, 0.65); /* Capa oscura encima de la imagen */
+  z-index: 1;
+}
+
+.card {
+  width: 100%;
+  max-width: 440px;
+  background: rgba(20, 20, 20, 0.5);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 24px;
+  padding: 3rem 2.5rem;
+  position: relative;
+  z-index: 2;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+  animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  color: white;
+}
+
+@keyframes slideUp {
+  0% { opacity: 0; transform: translateY(30px) scale(0.95); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.logo {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.logoEmoji {
+  font-size: 3rem;
+  display: block;
+  margin-bottom: 0.5rem;
+  filter: drop-shadow(0 4px 12px rgba(0,0,0,0.3));
+}
+
+.logoText {
+  font-family: var(--font-heading, 'Inter', sans-serif);
+  font-size: 1.8rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #f59e0b, #ef4444);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  letter-spacing: -0.5px;
+}
+
+.title {
+  text-align: center;
+  font-size: 1rem;
+  font-weight: 400;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 2rem;
+}
+
+.error {
+  background: rgba(239, 68, 68, 0.15);
+  border-left: 4px solid #ef4444;
+  color: #fca5a5;
+  padding: 1rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  margin-bottom: 1.5rem;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.inputGroup label {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.9);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.inputGroup input,
+.select {
+  padding: 0.8rem 1.2rem;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  color: white;
+  font-size: 0.95rem;
+  transition: all 0.3s ease;
+  outline: none;
+}
+
+.select option {
+  background: #1f2937;
+  color: white;
+}
+
+.inputGroup input:focus,
+.select:focus {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: #f59e0b;
+  box-shadow: 0 0 0 4px rgba(245, 158, 11, 0.15);
+}
+
+.inputGroup input::placeholder {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+.submitBtn {
+  margin-top: 1rem;
+  padding: 1.1rem;
+  border-radius: 12px;
+  border: none;
+  background: linear-gradient(135deg, #f59e0b, #ea580c);
+  color: white;
+  font-weight: 600;
+  font-size: 1.05rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.8rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 20px rgba(234, 88, 12, 0.3);
+}
+
+.submitBtn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 25px rgba(234, 88, 12, 0.4);
+  background: linear-gradient(135deg, #fbbf24, #ea580c);
+}
+
+.submitBtn:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.submitBtn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+  filter: grayscale(0.3);
+}
+
+.links, .footer {
+  margin-top: 1.5rem;
+  text-align: center;
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.links a, .footer a {
+  color: #fbbf24;
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.2s ease;
+}
+
+.links a:hover, .footer a:hover {
+  color: #fcd34d;
+  text-decoration: underline;
+}
