@@ -5,7 +5,7 @@ import User from '../models/User.js';
 const generateToken = (user) => {
   return jwt.sign(
     { id: user._id, role: user.role },
-    process.env.JWT_SECRET,
+    process.env.JWT_SECRET || 'platoya_secret_key_development_2026',
     { expiresIn: '7d' }
   );
 };
@@ -23,21 +23,45 @@ export const register = async (req, res) => {
       });
     }
 
+    const cleanEmail = String(email).trim().toLowerCase();
+    const cleanNombre = String(nombre).trim();
+
+    // Validar formato de email básico
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(cleanEmail)) {
+      return res.status(400).json({
+        success: false,
+        message: 'El formato del correo electrónico no es válido.',
+      });
+    }
+
+    // Validar longitud de contraseña
+    if (String(password).length < 6) {
+      return res.status(400).json({
+        success: false,
+        message: 'La contraseña debe tener al menos 6 caracteres.',
+      });
+    }
+
+    // Validar roles permitidos
+    const allowedRoles = ['cliente', 'cocinero'];
+    const assignedRole = allowedRoles.includes(role) ? role : 'cliente';
+
     // Verificar si el email ya está registrado
-    const existingUser = await User.findOne({ email: email.toLowerCase() });
+    const existingUser = await User.findOne({ email: cleanEmail });
     if (existingUser) {
       return res.status(400).json({
         success: false,
-        message: 'Ya existe una cuenta con ese email.',
+        message: 'Ya existe una cuenta con ese correo electrónico.',
       });
     }
 
     // Crear el usuario (el password se hashea en el pre-save hook)
     const user = await User.create({
-      nombre,
-      email,
-      password,
-      role: role || 'cliente',
+      nombre: cleanNombre,
+      email: cleanEmail,
+      password: String(password),
+      role: assignedRole,
     });
 
     // Generar token
@@ -58,8 +82,7 @@ export const register = async (req, res) => {
     console.error('Error en registro:', error);
     res.status(500).json({
       success: false,
-      message: 'Error al registrar usuario.',
-      error: error.message,
+      message: 'Error interno al registrar usuario.',
     });
   }
 };
@@ -77,8 +100,10 @@ export const login = async (req, res) => {
       });
     }
 
+    const cleanEmail = String(email).trim().toLowerCase();
+
     // Buscar usuario por email
-    const user = await User.findOne({ email: email.toLowerCase() });
+    const user = await User.findOne({ email: cleanEmail });
     if (!user) {
       return res.status(401).json({
         success: false,
@@ -87,7 +112,7 @@ export const login = async (req, res) => {
     }
 
     // Comparar contraseña
-    const isMatch = await user.comparePassword(password);
+    const isMatch = await user.comparePassword(String(password));
     if (!isMatch) {
       return res.status(401).json({
         success: false,
@@ -113,8 +138,7 @@ export const login = async (req, res) => {
     console.error('Error en login:', error);
     res.status(500).json({
       success: false,
-      message: 'Error al iniciar sesión.',
-      error: error.message,
+      message: 'Error interno al iniciar sesión.',
     });
   }
 };
@@ -146,7 +170,6 @@ export const getMe = async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Error al obtener datos del usuario.',
-      error: error.message,
     });
   }
 };

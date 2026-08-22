@@ -9,7 +9,7 @@
   justify-content: center;
   padding: 2rem;
   position: relative;
-  background-image: url('/login_bg.png');
+  background-image: url('/login_bg.webp');
   background-size: cover;
   background-position: center;
   background-attachment: fixed;
@@ -166,21 +166,21 @@
   filter: grayscale(0.3);
 }
 
-.links {
+.links, .footer {
   margin-top: 2rem;
   text-align: center;
   font-size: 0.95rem;
   color: rgba(255, 255, 255, 0.6);
 }
 
-.links a {
+.links a, .footer a {
   color: #fbbf24;
   text-decoration: none;
   font-weight: 600;
   transition: color 0.2s ease;
 }
 
-.links a:hover {
+.links a:hover, .footer a:hover {
   color: #fcd34d;
   text-decoration: underline;
 }

@@ -1,16 +1,53 @@
+import mongoose from 'mongoose';
 import Pedido from '../models/Pedido.js';
+import Plato from '../models/Plato.js';
 import { getIO } from '../sockets/index.js';
+
+// Helper para calcular y validar items contra la base de datos
+const calculateOrderTotal = async (items) => {
+  const platoIds = items.map((it) => it.plato || it._id);
+  const dbPlatos = await Plato.find({ _id: { $in: platoIds } });
+  const platoMap = new Map(dbPlatos.map((p) => [p._id.toString(), p]));
+
+  let calculatedTotal = 0;
+  const verifiedItems = [];
+
+  for (const item of items) {
+    const pId = (item.plato || item._id)?.toString();
+    const dbPlato = platoMap.get(pId);
+
+    if (!dbPlato) {
+      throw new Error(`El plato con ID ${pId} no existe en el catálogo.`);
+    }
+
+    const cantidad = Math.max(1, parseInt(item.cantidad, 10) || 1);
+    const precio = dbPlato.precio;
+    calculatedTotal += precio * cantidad;
+
+    verifiedItems.push({
+      plato: dbPlato._id,
+      nombre: dbPlato.nombre,
+      precio: precio,
+      cantidad: cantidad,
+    });
+  }
+
+  return {
+    total: Math.round(calculatedTotal * 100) / 100,
+    items: verifiedItems,
+  };
+};
 
 // POST /api/pedidos - Crear un nuevo pedido
 export const createPedido = async (req, res) => {
   try {
-    const { items, total, direccion, paypalOrderId } = req.body;
+    const { items, direccion, paypalOrderId } = req.body;
 
     // Validar que haya items
-    if (!items || items.length === 0) {
+    if (!items || !Array.isArray(items) || items.length === 0) {
       return res.status(400).json({
         success: false,
-        message: 'El pedido debe tener al menos un item.',
+        message: 'El pedido debe tener al menos un plato.',
       });
     }
 
@@ -22,14 +59,23 @@ export const createPedido = async (req, res) => {
       });
     }
 
+    // Validar y recalcular precios en el backend (prevención de Price Tampering)
+    const { total: secureTotal, items: secureItems } = await calculateOrderTotal(items);
+
     // Crear el pedido
     const pedido = await Pedido.create({
       cliente: req.user.id,
-      items,
-      total,
-      direccion,
+      items: secureItems,
+      total: secureTotal,
+      direccion: {
+        calle: String(direccion.calle).trim(),
+        ciudad: String(direccion.ciudad).trim(),
+        codigoPostal: direccion.codigoPostal ? String(direccion.codigoPostal).trim() : '',
+        referencia: direccion.referencia ? String(direccion.referencia).trim() : '',
+      },
       paypalOrderId: paypalOrderId || null,
       paypalStatus: paypalOrderId ? 'COMPLETED' : null,
+      estado: 'pendiente',
     });
 
     // Popular datos del cliente para la respuesta
@@ -49,10 +95,9 @@ export const createPedido = async (req, res) => {
     });
   } catch (error) {
     console.error('Error al crear pedido:', error);
-    res.status(500).json({
+    res.status(400).json({
       success: false,
-      message: 'Error al crear el pedido.',
-      error: error.message,
+      message: error.message || 'Error al crear el pedido.',
     });
   }
 };
@@ -73,9 +118,9 @@ export const getPedidos = async (req, res) => {
       .sort({ createdAt: -1 });
 
     // Enriquecer items con la imagen del plato
-    const pedidosEnriquecidos = pedidos.map(pedido => {
+    const pedidosEnriquecidos = pedidos.map((pedido) => {
       const p = pedido.toObject();
-      p.items = p.items.map(item => ({
+      p.items = p.items.map((item) => ({
         ...item,
         imagen: item.plato?.imagen || null,
         plato: item.plato?._id || item.plato,
@@ -93,7 +138,6 @@ export const getPedidos = async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Error al obtener los pedidos.',
-      error: error.message,
     });
   }
 };
@@ -101,8 +145,14 @@ export const getPedidos = async (req, res) => {
 // GET /api/pedidos/:id - Obtener un pedido por ID
 export const getPedidoById = async (req, res) => {
   try {
-    const pedido = await Pedido.findById(req.params.id)
-      .populate('cliente', 'nombre email');
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({
+        success: false,
+        message: 'ID de pedido no válido.',
+      });
+    }
+
+    const pedido = await Pedido.findById(req.params.id).populate('cliente', 'nombre email');
 
     if (!pedido) {
       return res.status(404).json({
@@ -112,7 +162,7 @@ export const getPedidoById = async (req, res) => {
     }
 
     // Si es cliente, verificar que sea el dueño del pedido
-    if (req.user.role === 'cliente' && pedido.cliente._id.toString() !== req.user.id) {
+    if (req.user.role === 'cliente' && pedido.cliente?._id.toString() !== req.user.id) {
       return res.status(403).json({
         success: false,
         message: 'No tiene permiso para ver este pedido.',
@@ -128,7 +178,6 @@ export const getPedidoById = async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Error al obtener el pedido.',
-      error: error.message,
     });
   }
 };
@@ -137,6 +186,13 @@ export const getPedidoById = async (req, res) => {
 export const updateEstado = async (req, res) => {
   try {
     const { estado } = req.body;
+
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({
+        success: false,
+        message: 'ID de pedido no válido.',
+      });
+    }
 
     // Validar que se proporcione un estado
     if (!estado) {
@@ -171,10 +227,10 @@ export const updateEstado = async (req, res) => {
     // Emitir evento de socket para notificar la actualización
     const io = getIO();
     if (io) {
-      // Notificar a todos los clientes conectados
       io.emit('pedido:actualizado', pedido);
-      // Notificar específicamente al cliente dueño del pedido
-      io.to(`user:${pedido.cliente._id}`).emit('pedido:actualizado', pedido);
+      if (pedido.cliente?._id) {
+        io.to(`user:${pedido.cliente._id}`).emit('pedido:actualizado', pedido);
+      }
       console.log(`📡 Evento pedido:actualizado emitido (pedido: ${pedido._id}, estado: ${estado})`);
     }
 
@@ -188,7 +244,6 @@ export const updateEstado = async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Error al actualizar el estado del pedido.',
-      error: error.message,
     });
   }
 };

@@ -1,6 +1,6 @@
 # PlatoYa 🍽️
 
-[![PlatoYa Menu](./frontend/public/images/Principal.png)](https://platoya-frontend-production.up.railway.app)
+[![PlatoYa Menu](./frontend/public/images/Principal.webp)](https://platoya-frontend-production.up.railway.app)
 
 > *Haz clic en la imagen de arriba para visitar la aplicación en vivo.*
 

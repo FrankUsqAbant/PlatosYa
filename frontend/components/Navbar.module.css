@@ -1,19 +1,20 @@
 .header {
-  border-bottom: 1px solid rgba(0,0,0,0.08);
-  background-color: var(--bg-ground);
-  padding: var(--space-md) 0;
   position: sticky;
   top: 0;
-  z-index: 50;
-  transition: background-color 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+  z-index: 100;
+  padding: 16px 0;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  background: rgba(10, 13, 20, 0.7);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
 }
 
 .scrolled {
-  background-color: rgba(253, 251, 247, 0.95);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
-  box-shadow: 0 1px 20px rgba(0,0,0,0.06);
-  border-bottom-color: transparent;
+  padding: 12px 0;
+  background: rgba(18, 23, 34, 0.88);
+  border-bottom-color: rgba(255, 255, 255, 0.1);
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.7);
 }
 
 .navContainer {
@@ -25,189 +26,230 @@
 
 /* Logo */
 .logo {
-  font-family: var(--font-serif);
-  font-size: 22px;
-  font-weight: 500;
-  letter-spacing: 0.05em;
-  color: var(--color-ink);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-heading);
+  font-size: 24px;
+  font-weight: 800;
+  color: #FFFFFF;
   text-decoration: none;
-  flex-shrink: 0;
+  letter-spacing: -0.03em;
+  transition: transform var(--transition-fast);
+}
+
+.logo:hover {
+  transform: scale(1.03);
+}
+
+.logoIcon {
+  font-size: 26px;
+  filter: drop-shadow(0 2px 8px rgba(255, 94, 54, 0.4));
 }
 
 .logoAccent {
-  color: var(--color-amber);
+  background: var(--gradient-fire);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
-/* Nav Links */
+/* Navigation Links */
 .nav {
   display: flex;
-  flex: 1;
-  justify-content: center;
+  align-items: center;
 }
 
 .navList {
   display: flex;
-  gap: var(--space-xl);
+  gap: 8px;
   list-style: none;
   margin: 0;
-  padding: 0;
-  align-items: center;
+  padding: 4px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: var(--radius-full);
+  backdrop-filter: blur(10px);
 }
 
 .navLink {
-  font-family: var(--font-sans);
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
+  font-size: 13px;
+  font-weight: 600;
   color: var(--color-ink-muted);
   text-decoration: none;
-  transition: color var(--transition-slow);
-  padding-bottom: 3px;
-  border-bottom: 1px solid transparent;
+  padding: 8px 18px;
+  border-radius: var(--radius-full);
+  transition: all var(--transition-smooth);
   display: flex;
   align-items: center;
+  gap: 6px;
 }
 
 .navLink:hover {
-  color: var(--color-ink);
+  color: #FFFFFF;
+  background: rgba(255, 255, 255, 0.06);
 }
 
 .navLinkActive {
-  color: var(--color-ink) !important;
-  border-bottom-color: var(--color-ink);
+  color: #FFFFFF !important;
+  background: var(--gradient-fire) !important;
+  box-shadow: 0 4px 15px rgba(255, 94, 54, 0.35);
 }
 
 /* Actions */
 .actions {
   display: flex;
   align-items: center;
-  gap: var(--space-md);
-  flex-shrink: 0;
+  gap: 12px;
 }
 
 /* User Menu */
 .userMenu {
   display: flex;
   align-items: center;
-  gap: var(--space-sm);
+  gap: 8px;
 }
 
 .userChip {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 5px 12px 5px 5px;
-  border: 1px solid rgba(0,0,0,0.1);
+  gap: 10px;
+  padding: 4px 14px 4px 6px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-full);
   text-decoration: none;
-  transition: all var(--transition-slow);
-  color: var(--color-ink);
+  transition: all var(--transition-smooth);
+  color: #FFFFFF;
 }
 
 .userChip:hover, .userChipActive {
-  border-color: var(--color-ink);
-  color: var(--color-ink);
+  background: rgba(255, 255, 255, 0.1);
+  border-color: var(--color-primary);
+  box-shadow: 0 0 15px rgba(255, 94, 54, 0.2);
 }
 
 .userAvatar {
-  width: 26px;
-  height: 26px;
-  background-color: var(--color-ink);
-  color: var(--bg-ground);
+  width: 28px;
+  height: 28px;
+  background: var(--gradient-fire);
+  color: #FFFFFF;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: var(--font-sans);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
-  flex-shrink: 0;
+  border-radius: var(--radius-full);
+  box-shadow: 0 2px 8px rgba(255, 94, 54, 0.4);
 }
 
 .userName {
-  font-family: var(--font-sans);
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
+  font-size: 13px;
+  font-weight: 600;
 }
 
 .logoutBtn {
-  background: none;
-  border: 1px solid transparent;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: var(--radius-full);
   color: var(--color-ink-muted);
   display: flex;
   align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
   cursor: pointer;
-  padding: 6px;
-  transition: all var(--transition-slow);
+  transition: all var(--transition-fast);
 }
 
 .logoutBtn:hover {
-  color: var(--color-ink);
-  border-color: rgba(0,0,0,0.1);
+  color: var(--color-accent);
+  border-color: rgba(255, 46, 99, 0.3);
+  background: rgba(255, 46, 99, 0.1);
 }
 
 .loginBtn {
-  font-family: var(--font-sans);
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  color: var(--color-ink);
+  font-size: 13px;
+  font-weight: 600;
+  color: #FFFFFF;
   text-decoration: none;
-  padding: 8px 16px;
-  border: 1px solid var(--color-ink);
-  transition: all var(--transition-slow);
+  padding: 8px 20px;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius-full);
+  transition: all var(--transition-smooth);
 }
 
 .loginBtn:hover {
-  background-color: var(--color-ink);
-  color: var(--bg-ground);
+  background: var(--gradient-fire);
+  border-color: transparent;
+  box-shadow: var(--shadow-glow);
+  transform: translateY(-1px);
 }
 
-/* Cart */
+/* Cart Button */
 .cartIcon {
   position: relative;
   display: flex;
   align-items: center;
-  color: var(--color-ink);
-  transition: color var(--transition-slow);
-  padding: 4px;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-full);
+  color: #FFFFFF;
+  transition: all var(--transition-smooth);
 }
 
 .cartIcon:hover {
-  color: var(--color-amber);
+  background: rgba(255, 94, 54, 0.15);
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  transform: scale(1.05);
 }
 
 .cartBadge {
   position: absolute;
   top: -4px;
   right: -4px;
-  background-color: var(--color-amber);
-  color: #fff;
-  font-family: var(--font-sans);
-  font-size: 9px;
-  font-weight: 700;
-  height: 16px;
-  min-width: 16px;
-  border-radius: 8px;
+  background: var(--gradient-fire);
+  color: #FFFFFF;
+  font-size: 11px;
+  font-weight: 800;
+  height: 20px;
+  min-width: 20px;
+  border-radius: var(--radius-full);
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0 4px;
+  padding: 0 5px;
+  box-shadow: 0 2px 10px rgba(255, 94, 54, 0.5);
+  animation: pulseBadge 2s infinite;
 }
 
-/* Mobile toggle */
+@keyframes pulseBadge {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+/* Mobile Toggle */
 .mobileToggle {
   display: none;
-  background: none;
-  border: none;
-  color: var(--color-ink);
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: var(--radius-sm);
+  color: #FFFFFF;
   cursor: pointer;
-  padding: 4px;
+  padding: 8px;
 }
 
-/* Mobile */
+/* Mobile Responsive */
 @media (max-width: 768px) {
   .mobileToggle {
-    display: block;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .nav {
@@ -215,13 +257,14 @@
     top: 100%;
     left: 0;
     width: 100%;
-    background-color: var(--bg-surface);
-    border-bottom: 1px solid rgba(0,0,0,0.08);
+    background: rgba(18, 23, 34, 0.98);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
     transform: translateY(-10px);
     opacity: 0;
     pointer-events: none;
-    transition: all var(--transition-slow);
-    justify-content: flex-start;
+    transition: all var(--transition-smooth);
+    padding: 16px var(--space-md);
   }
 
   .nav.open {
@@ -232,9 +275,16 @@
 
   .navList {
     flex-direction: column;
-    padding: var(--space-lg);
-    gap: var(--space-md);
-    align-items: flex-start;
+    width: 100%;
+    background: transparent;
+    border: none;
+    gap: 8px;
+  }
+
+  .navLink {
+    width: 100%;
+    justify-content: center;
+    padding: 12px;
   }
 
   .userName {

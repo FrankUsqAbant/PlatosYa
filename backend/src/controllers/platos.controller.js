@@ -1,3 +1,4 @@
+import mongoose from 'mongoose';
 import Plato from '../models/Plato.js';
 
 // GET /api/platos - Listar platos disponibles (con filtro opcional por categoría)
@@ -9,8 +10,8 @@ export const getPlatos = async (req, res) => {
     const filtro = { disponible: true };
 
     // Agregar filtro por categoría si se proporciona
-    if (categoria) {
-      filtro.categoria = categoria;
+    if (categoria && typeof categoria === 'string') {
+      filtro.categoria = String(categoria).trim();
     }
 
     const platos = await Plato.find(filtro).sort({ categoria: 1, nombre: 1 });
@@ -25,7 +26,6 @@ export const getPlatos = async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Error al obtener los platos.',
-      error: error.message,
     });
   }
 };
@@ -33,6 +33,13 @@ export const getPlatos = async (req, res) => {
 // GET /api/platos/:id - Obtener un plato por su ID
 export const getPlatoById = async (req, res) => {
   try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({
+        success: false,
+        message: 'ID de plato no válido.',
+      });
+    }
+
     const plato = await Plato.findById(req.params.id);
 
     if (!plato) {
@@ -51,7 +58,6 @@ export const getPlatoById = async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Error al obtener el plato.',
-      error: error.message,
     });
   }
 };
@@ -61,13 +67,28 @@ export const createPlato = async (req, res) => {
   try {
     const { nombre, descripcion, precio, imagen, categoria, disponible } = req.body;
 
+    if (!nombre || !descripcion || precio === undefined || !categoria) {
+      return res.status(400).json({
+        success: false,
+        message: 'Nombre, descripción, precio y categoría son obligatorios.',
+      });
+    }
+
+    const numPrecio = parseFloat(precio);
+    if (isNaN(numPrecio) || numPrecio < 0) {
+      return res.status(400).json({
+        success: false,
+        message: 'El precio debe ser un número válido mayor o igual a 0.',
+      });
+    }
+
     const plato = await Plato.create({
-      nombre,
-      descripcion,
-      precio,
-      imagen: imagen || '',
-      categoria,
-      disponible: disponible !== undefined ? disponible : true,
+      nombre: String(nombre).trim(),
+      descripcion: String(descripcion).trim(),
+      precio: numPrecio,
+      imagen: imagen ? String(imagen).trim() : '',
+      categoria: String(categoria).trim(),
+      disponible: disponible !== undefined ? Boolean(disponible) : true,
     });
 
     res.status(201).json({
@@ -80,7 +101,6 @@ export const createPlato = async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Error al crear el plato.',
-      error: error.message,
     });
   }
 };
@@ -88,9 +108,36 @@ export const createPlato = async (req, res) => {
 // PUT /api/platos/:id - Actualizar plato (solo cocinero)
 export const updatePlato = async (req, res) => {
   try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({
+        success: false,
+        message: 'ID de plato no válido.',
+      });
+    }
+
+    const allowedUpdates = ['nombre', 'descripcion', 'precio', 'imagen', 'categoria', 'disponible'];
+    const updateData = {};
+
+    for (const key of allowedUpdates) {
+      if (req.body[key] !== undefined) {
+        updateData[key] = req.body[key];
+      }
+    }
+
+    if (updateData.precio !== undefined) {
+      const numPrecio = parseFloat(updateData.precio);
+      if (isNaN(numPrecio) || numPrecio < 0) {
+        return res.status(400).json({
+          success: false,
+          message: 'El precio debe ser un número válido mayor o igual a 0.',
+        });
+      }
+      updateData.precio = numPrecio;
+    }
+
     const plato = await Plato.findByIdAndUpdate(
       req.params.id,
-      req.body,
+      updateData,
       { new: true, runValidators: true }
     );
 
@@ -111,7 +158,6 @@ export const updatePlato = async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Error al actualizar el plato.',
-      error: error.message,
     });
   }
 };
@@ -119,6 +165,13 @@ export const updatePlato = async (req, res) => {
 // DELETE /api/platos/:id - Eliminar plato (solo cocinero)
 export const deletePlato = async (req, res) => {
   try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
+      return res.status(400).json({
+        success: false,
+        message: 'ID de plato no válido.',
+      });
+    }
+
     const plato = await Plato.findByIdAndDelete(req.params.id);
 
     if (!plato) {
@@ -137,7 +190,6 @@ export const deletePlato = async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Error al eliminar el plato.',
-      error: error.message,
     });
   }
 };

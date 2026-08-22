@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
-import { ShoppingBag, LogOut, Menu, X, ChefHat } from "lucide-react";
+import { ShoppingBag, LogOut, Menu, X, ChefHat, UtensilsCrossed } from "lucide-react";
 import styles from "./Navbar.module.css";
 import { useState, useEffect } from "react";
 import { useCart } from "@/context/CartContext";
@@ -16,7 +16,7 @@ export default function Navbar() {
   const pathname = usePathname();
 
   useEffect(() => {
-    const handleScroll = () => setIsScrolled(window.scrollY > 20);
+    const handleScroll = () => setIsScrolled(window.scrollY > 15);
     window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
@@ -26,12 +26,17 @@ export default function Navbar() {
   return (
     <header className={`${styles.header} ${isScrolled ? styles.scrolled : ""}`}>
       <div className={`container ${styles.navContainer}`}>
-        <button className={styles.mobileToggle} onClick={() => setIsMenuOpen(!isMenuOpen)} aria-label="Menú">
-          {isMenuOpen ? <X size={20} strokeWidth={1.5} /> : <Menu size={20} strokeWidth={1.5} />}
+        <button 
+          className={styles.mobileToggle} 
+          onClick={() => setIsMenuOpen(!isMenuOpen)} 
+          aria-label="Menú"
+        >
+          {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
         </button>
 
         <Link href="/" className={styles.logo}>
-          Plato<span className={styles.logoAccent}>Ya</span>
+          <span className={styles.logoIcon}>🍽️</span>
+          <span>Plato<span className={styles.logoAccent}>Ya</span></span>
         </Link>
 
         <nav className={`${styles.nav} ${isMenuOpen ? styles.open : ""}`}>
@@ -42,7 +47,8 @@ export default function Navbar() {
                 className={`${styles.navLink} ${isActive("/menu") ? styles.navLinkActive : ""}`}
                 onClick={() => setIsMenuOpen(false)}
               >
-                Menú
+                <UtensilsCrossed size={15} />
+                <span>Menú</span>
               </Link>
             </li>
 
@@ -53,8 +59,8 @@ export default function Navbar() {
                   className={`${styles.navLink} ${isActive("/kitchen") ? styles.navLinkActive : ""}`}
                   onClick={() => setIsMenuOpen(false)}
                 >
-                  <ChefHat size={14} strokeWidth={1.5} style={{ display: "inline", marginRight: "5px" }} />
-                  Cocina
+                  <ChefHat size={15} />
+                  <span>Cocina</span>
                 </Link>
               </li>
             )}
@@ -64,7 +70,10 @@ export default function Navbar() {
         <div className={styles.actions}>
           {session ? (
             <div className={styles.userMenu}>
-              <Link href="/orders" className={`${styles.userChip} ${isActive("/orders") ? styles.userChipActive : ""}`}>
+              <Link 
+                href="/orders" 
+                className={`${styles.userChip} ${isActive("/orders") ? styles.userChipActive : ""}`}
+              >
                 <span className={styles.userAvatar}>
                   {session?.user?.name ? String(session.user.name)[0].toUpperCase() : "U"}
                 </span>
@@ -72,8 +81,12 @@ export default function Navbar() {
                   {session?.user?.name ? String(session.user.name).split(" ")[0] : "Usuario"}
                 </span>
               </Link>
-              <button onClick={() => { clearCart(); signOut(); }} className={styles.logoutBtn} title="Cerrar Sesión">
-                <LogOut size={16} strokeWidth={1.5} />
+              <button 
+                onClick={() => { clearCart(); signOut(); }} 
+                className={styles.logoutBtn} 
+                title="Cerrar Sesión"
+              >
+                <LogOut size={16} />
               </button>
             </div>
           ) : (
@@ -82,8 +95,8 @@ export default function Navbar() {
             </Link>
           )}
 
-          <Link href="/menu" className={styles.cartIcon}>
-            <ShoppingBag size={20} strokeWidth={1.5} />
+          <Link href="/menu" className={styles.cartIcon} aria-label="Ver pedido">
+            <ShoppingBag size={18} />
             {cartCount > 0 && <span className={styles.cartBadge}>{cartCount}</span>}
           </Link>
         </div>
