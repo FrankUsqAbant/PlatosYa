@@ -16,11 +16,6 @@ export default function Home() {
       <section className={styles.heroSection}>
         <div className={`container ${styles.heroContainer}`}>
           <div className={styles.textCol}>
-            <div className={styles.eyebrow}>
-              <Flame size={15} color="var(--color-amber)" />
-              <span>Gastronomía Gourmet · Entrega en Tiempo Real</span>
-            </div>
-            
             <h1 className={styles.title}>
               El placer de comer bien, <br />
               <span className={styles.titleHighlight}>directo a tu mesa.</span>
