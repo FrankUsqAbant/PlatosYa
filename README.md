@@ -1,8 +1,6 @@
 <div align="center">
 
-# 🍽️ PlatoYa
-
-**Plataforma Gourmet Full Stack con Gestión de Cocina y Pedidos en Tiempo Real**
+<img src="./frontend/public/images/title_header.svg" alt="PlatoYa Typography Header" width="100%" />
 
 [![PlatoYa Live Demo](./frontend/public/images/Principal.webp)](https://platos-ya.vercel.app)
 
